@@ -1,10 +1,10 @@
 from martypy import Marty
 
-# On se connecte à TON serveur
+# On se connecte au serveur
 m = Marty("WiFi", "127.0.0.1", port=8080) # adresse locale
 print("Connexion réussie !")
 
-# On envoie une commande simple
+# On envoie une connexion simple
 try:
     m.walk(1)   # marche 1 pas
 except Exception as e:
