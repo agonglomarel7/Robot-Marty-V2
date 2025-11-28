@@ -2,7 +2,7 @@ import socket
 
 def start_server():
     HOST = '0.0.0.0'
-    PORT = 8080    # OUI : martypy utilise le port 80 !!!
+    PORT = 8080   
 
     print(f"Serveur Marty (TCP) en attente sur {HOST}:{PORT}")
 
