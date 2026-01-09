@@ -1,19 +1,28 @@
-from gui.layout import creer_interface
-from gui.updater import demarrer_updater
-from gui.logs import ajouter_log
+from gui.layout import build_layout
+from core.robot_manager import RobotManager
+from core.command_handler import CommandHandler
+from core.event_loop import EventLoop
+from services.logger import GuiLogger
+
+
+# Classe MartyEmulatorGUI
 
 class MartyEmulatorGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Marty v2 Robot Emulator")
+        self.root.geometry("1400x800")
 
-        self.update_queue = queue.Queue()
-        self.command_queue = queue.Queue()
+        # Services
+        self.logger = GuiLogger(self)
+        self.robot_manager = RobotManager(self)
+        self.command_handler = CommandHandler(self)
+        self.event_loop = EventLoop(self)
 
-        self.robots = {}
-        self.robot_selectionne = None
+        # Interface
+        build_layout(self)
 
-        creer_interface(self)
-        demarrer_updater(self)
+        self.logger.system("Interface graphique initialisée")
+        self.logger.system("En attente de connexion serveur...")
 
-        ajouter_log(self, "SYSTEM", "GUI démarrée")
+        self.event_loop.start()
