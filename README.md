@@ -1,31 +1,33 @@
-# Robot-Marty-V2 Jumeau Numérique
-# Marty V2 Emulator
+# Robot Marty V2 – Émulateur & Serveur RICSerial
 
-Serveur d'émulation TCP pour le robot Marty V2 - Réception et analyse des trames de communication martypy.
+Ce projet vise à émuler un robot **Marty v2** afin de permettre la communication avec la librairie officielle **martypy**, en implémentant le protocole **RICSerial encapsulé dans WebSocket**.
 
-## Installation
+---
+
+## 🔧 Prérequis
+
+- Python 3.8+
+- Git
+- Linux recommandé (testé sous Ubuntu)
+
+---
+
+## 📥 Cloner le projet
+
 ```bash
-# Créer l'environnement virtuel
-python -m venv venv
+git clone git@github.com:agonglomarel7/Robot-Marty-V2.git
+cd Robot-Marty-V2
+cd marty_emulator
 
-# Activer (Linux/Mac)
+python3 -m venv venv
 source venv/bin/activate
 
-# Activer (Windows)
-venv\Scripts\activate
+pip install -r requirements.txt
 
-# Installer les dépendances
-pip install martypy
-```
+cd server
+python3 server_marty_ws.py
 
-## Utilisation
+cd Robot-Marty-V2/marty_emulator/client_test
+python3 test_marty_ws.py
 
-**Démarrer le serveur :**
-```bash
-sudo python server/server_marty.py
-```
-
-**Tester avec martypy :**
-```bash
-python client_tests/test_martypy_connect.py
-```
+---
