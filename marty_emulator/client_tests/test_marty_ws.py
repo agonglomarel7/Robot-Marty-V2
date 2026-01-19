@@ -1,8 +1,5 @@
-# ============================================================================
 # TESTS AVANCÉS - SERVEUR D'ÉMULATION MARTY V2
-# ============================================================================
 # Ce script teste toutes les fonctionnalités du serveur d'émulation
-# ============================================================================
 
 from martypy import Marty
 import time
@@ -12,30 +9,24 @@ print("╔" + "═"*68 + "╗")
 print("║" + " TESTS AVANCÉS - SERVEUR ÉMULATION MARTY V2 ".center(68) + "║")
 print("╚" + "═"*68 + "╝\n")
 
-# ============================================================================
 # CONFIGURATION
-# ============================================================================
 SERVEUR_IP = "127.0.0.1"
 SERVEUR_PORT = 8080
 
-# ============================================================================
 # TEST 1 : CONNEXION SIMPLE
-# ============================================================================
-print("🔌 TEST 1: Connexion au serveur")
+print("TEST 1: Connexion au serveur")
 print("─" * 70)
 
 try:
-    print("⏳ Connexion en cours...", end=" ")
+    print("Connexion en cours...", end=" ")
     marty = Marty("wifi", SERVEUR_IP, port=SERVEUR_PORT)
-    print("✅")
-    print("   ✓ Client connecté avec succès\n")
+    print("")
+    print("Client connecté avec succès\n")
 except Exception as e:
-    print(f"❌\n   ✗ Erreur: {e}\n")
+    print(f"\nErreur: {e}\n")
     exit(1)
 
-# ============================================================================
 # TEST 2 : COMMANDES DE MOUVEMENT
-# ============================================================================
 print("\n🚶 TEST 2: Commandes de mouvement")
 print("─" * 70)
 
@@ -51,18 +42,16 @@ mouvements = [
 for nom, fonction in mouvements:
     print(f"\n🔸 {nom}")
     try:
-        print(f"   ⏳ Envoi...", end=" ")
+        print(f"   Envoi...", end=" ")
         fonction()
-        print("✅")
+        print("")
         print(f"   ✓ Commande acceptée")
         time.sleep(0.3)
     except Exception as e:
-        print(f"⚠️\n   ✗ Erreur: {e}")
+        print(f"\nErreur: {e}")
 
-# ============================================================================
-# TEST 3 : LECTURE DE CAPTEURS
-# ============================================================================
-print("\n\n📊 TEST 3: Lecture de capteurs")
+# TEST 3 : LECTURE DE CAPTEURS# ============================================================================
+print("\n\n TEST 3: Lecture de capteurs")
 print("─" * 70)
 
 capteurs = [
@@ -77,20 +66,18 @@ valeurs_capteurs = {}
 for nom, fonction, unite in capteurs:
     print(f"\n🔹 {nom}")
     try:
-        print(f"   ⏳ Lecture...", end=" ")
+        print(f"  Lecture...", end=" ")
         valeur = fonction()
-        print("✅")
+        print("")
         print(f"   ✓ Valeur: {valeur} {unite}")
         valeurs_capteurs[nom] = valeur
         time.sleep(0.3)
     except Exception as e:
-        print(f"⚠️\n   ⚠ {str(e)[:50]}")
+        print(f"\n  {str(e)[:50]}")
         valeurs_capteurs[nom] = None
 
-# ============================================================================
 # TEST 4 : CONTRÔLE DES MOTEURS
-# ============================================================================
-print("\n\n⚙️ TEST 4: Contrôle des moteurs")
+print("\n\n TEST 4: Contrôle des moteurs")
 print("─" * 70)
 
 moteurs_test = [
@@ -101,22 +88,19 @@ moteurs_test = [
 ]
 
 for nom, motor_id in moteurs_test:
-    print(f"\n🔸 {nom} (ID: {motor_id})")
+    print(f"\n {nom} (ID: {motor_id})")
     try:
         # Lire le courant du moteur
-        print(f"   ⏳ Lecture courant...", end=" ")
+        print(f" Lecture courant...", end=" ")
         courant = marty.get_motor_current(motor_id)
-        print("✅")
-        print(f"   ✓ Courant: {courant} mA")
+        print(f"Courant: {courant} mA")
         
         time.sleep(0.2)
     except Exception as e:
-        print(f"⚠️\n   ⚠ {str(e)[:50]}")
+        print(f"\n  {str(e)[:50]}")
 
-# ============================================================================
 # TEST 5 : COMMANDES DES YEUX
-# ============================================================================
-print("\n\n👀 TEST 5: Expressions des yeux")
+print("\n\nTEST 5: Expressions des yeux")
 print("─" * 70)
 
 expressions = ["normal", "angry", "excited", "wide"]
@@ -126,76 +110,67 @@ for expression in expressions:
     try:
         print(f"   ⏳ Envoi...", end=" ")
         marty.eyes(expression)
-        print("✅")
-        print(f"   ✓ Expression changée")
+        print(f"   Expression changée")
         time.sleep(0.3)
     except Exception as e:
-        print(f"⚠️\n   ⚠ {str(e)[:50]}")
+        print(f"\n  {str(e)[:50]}")
 
-# ============================================================================
 # TEST 6 : GPIO (entrées/sorties)
-# ============================================================================
-print("\n\n🔌 TEST 6: GPIO (entrées/sorties)")
+print("\n\n TEST 6: GPIO (entrées/sorties)")
 print("─" * 70)
 
 try:
-    print("\n🔸 Lecture de tous les GPIO")
-    print(f"   ⏳ Lecture...", end=" ")
+    print("\n Lecture de tous les GPIO")
+    print(f"  Lecture...", end=" ")
     gpio_states = marty.get_gpio()
-    print("✅")
-    print(f"   ✓ États GPIO: {gpio_states}")
+    print(f"   États GPIO: {gpio_states}")
 except Exception as e:
-    print(f"⚠️\n   ⚠ {str(e)[:50]}")
+    print(f"\n  {str(e)[:50]}")
 
-# ============================================================================
 # TEST 7 : TEST DE STRESS (optionnel)
-# ============================================================================
-print("\n\n💪 TEST 7: Test de stress (10 commandes rapides)")
+print("\n\n TEST 7: Test de stress (10 commandes rapides)")
 print("─" * 70)
 
-print("\n⏳ Envoi de 10 commandes consécutives...\n")
+print("\n Envoi de 10 commandes consécutives...\n")
 
 erreurs = 0
 for i in range(10):
     try:
         print(f"   [{i+1}/10] ", end="")
         marty.walk(1)
-        print("✅", end=" ")
+        print(" ", end=" ")
         if (i + 1) % 5 == 0:
             print()
         time.sleep(0.1)
     except Exception as e:
-        print(f"❌", end=" ")
+        print(f" ", end=" ")
         erreurs += 1
 
-print(f"\n\n   📊 Résultat: {10 - erreurs}/10 réussies")
+print(f"\n\n Résultat: {10 - erreurs}/10 réussies")
 
-# ============================================================================
 # TEST 8 : MULTI-CONNEXIONS (optionnel)
-# ============================================================================
-print("\n\n🔀 TEST 8: Test multi-connexions")
+print("\n\nTEST 8: Test multi-connexions")
 print("─" * 70)
-print("⚠️  Ce test crée 3 connexions simultanées pour tester le threading\n")
+print(" Ce test crée 3 connexions simultanées pour tester le threading\n")
 
 def tester_connexion_parallele(numero):
     """Fonction qui teste une connexion dans un thread séparé"""
     try:
-        print(f"   🤖 Robot #{numero}: Connexion...", end=" ")
+        print(f" Robot #{numero}: Connexion...", end=" ")
         m = Marty("wifi", SERVEUR_IP, port=SERVEUR_PORT)
-        print("✅")
         
         # Envoyer quelques commandes
         for i in range(3):
             m.walk(1)
             time.sleep(0.2)
         
-        print(f"   🤖 Robot #{numero}: Commandes envoyées ✅")
+        print(f"    Robot #{numero}: Commandes envoyées ")
         
         m.close()
-        print(f"   🤖 Robot #{numero}: Déconnecté ✅")
+        print(f"    Robot #{numero}: Déconnecté ")
         
     except Exception as e:
-        print(f"❌ Robot #{numero}: {e}")
+        print(f" Robot #{numero}: {e}")
 
 # Créer 3 threads
 threads = []
@@ -209,53 +184,29 @@ for i in range(1, 4):
 for t in threads:
     t.join()
 
-print("\n   ✅ Test multi-connexions terminé")
+print("\n Test multi-connexions terminé")
 
-# ============================================================================
 # TEST 9 : DÉCONNEXION
-# ============================================================================
-print("\n\n🔌 TEST 9: Déconnexion propre")
+print("\n\n TEST 9: Déconnexion propre")
 print("─" * 70)
 
 try:
-    print("⏳ Fermeture de la connexion...", end=" ")
+    print("Fermeture de la connexion...", end=" ")
     marty.close()
-    print("✅")
-    print("   ✓ Connexion fermée proprement\n")
+    print("  Connexion fermée proprement\n")
 except Exception as e:
-    print(f"⚠️\n   ✗ Erreur: {e}\n")
+    print(f"\n   Erreur: {e}\n")
 
-# ============================================================================
 # RÉSUMÉ FINAL
-# ============================================================================
 print("\n" + "═" * 70)
 print(" RÉSUMÉ DES TESTS ".center(70, "═"))
 print("═" * 70 + "\n")
 
-print("📊 CAPTEURS LUS:")
+print(" CAPTEURS LUS:")
 print("─" * 70)
 for nom, valeur in valeurs_capteurs.items():
     if valeur is not None:
-        print(f"   ✅ {nom}: {valeur}")
+        print(f"    {nom}: {valeur}")
     else:
-        print(f"   ⚠️  {nom}: Non disponible")
+        print(f" {nom}: Non disponible")
 
-print("\n📈 STATISTIQUES:")
-print("─" * 70)
-print(f"   • Connexions testées: 4 (1 principale + 3 parallèles)")
-print(f"   • Commandes de mouvement: 6 types testés")
-print(f"   • Capteurs lus: {len(valeurs_capteurs)} types")
-print(f"   • Moteurs testés: 4 sur 9")
-print(f"   • Expressions yeux: 4 testées")
-
-print("\n🎯 CONCLUSION:")
-print("─" * 70)
-print("   Si la majorité des tests sont ✅, ton serveur d'émulation")
-print("   fonctionne correctement et émule bien un robot Marty v2 !")
-print("\n" + "═" * 70 + "\n")
-
-print("💡 PROCHAINE ÉTAPE:")
-print("   • Affiner les réponses pour correspondre exactement à Marty")
-print("   • Ajouter plus de capteurs (température, luminosité, etc.)")
-print("   • Implémenter un état persistant du robot")
-print("   • Créer une interface web de monitoring\n")
