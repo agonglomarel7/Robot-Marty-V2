@@ -15,9 +15,7 @@ import hashlib
 import base64
 from datetime import datetime
 
-# ============================================================================
 # CONFIGURATION
-# ============================================================================
 HOST = "0.0.0.0"
 PORT = 8080
 
@@ -25,9 +23,7 @@ PORT = 8080
 nombre_connexions = 0
 lock = threading.Lock()
 
-# ============================================================================
 # CLASSE : État d'un Robot Virtuel
-# ============================================================================
 class RobotVirtuel:
     """
     Classe représentant l'état d'un robot Marty émulé.
@@ -93,9 +89,7 @@ class RobotVirtuel:
         }
 
 
-# ============================================================================
 # CLASSE : Parser RICSerial
-# ============================================================================
 class RICSerialParser:
     """
     Parser pour le protocole RICSerial utilisé par Marty.
@@ -173,9 +167,7 @@ class RICSerialParser:
         }
 
 
-# ============================================================================
 # CLASSE : Générateur de Réponses RICSerial
-# ============================================================================
 class RICSerialGenerator:
     """
     Génère des réponses au format RICSerial attendues par martypy.
@@ -230,9 +222,7 @@ class RICSerialGenerator:
         return b"\xe7" + contenu + bytes([crc]) + b"\xe7"
 
 
-# ============================================================================
 # GESTIONNAIRE DE COMMANDES
-# ============================================================================
 class CommandeHandler:
     """
     Gère l'exécution des commandes et génère les réponses appropriées.
@@ -242,19 +232,14 @@ class CommandeHandler:
         self.robot = robot
     
     def traiter_commande(self, commande_parsee):
-        """
-        Traite une commande parsée et retourne la réponse appropriée.
-        """
         
         msg_id = commande_parsee.get("id", 0)
         
-        # ====================================================================
         # COMMANDES REST (URL-like)
-        # ====================================================================
         if commande_parsee["type"] == "rest":
             url = commande_parsee["url"]
             
-            print(f"   🔧 Commande REST: {url}")
+            print(f"  Commande REST: {url}")
             
             # Trajectoires (mouvements)
             if url.startswith("traj/"):
@@ -316,14 +301,12 @@ class CommandeHandler:
             # Par défaut : OK
             return RICSerialGenerator.creer_reponse_ok(msg_id)
         
-        # ====================================================================
         # COMMANDES JSON
-        # ====================================================================
         elif commande_parsee["type"] == "json":
             data = commande_parsee["data"]
             cmd_name = data.get("cmdName", "")
             
-            print(f"   📄 Commande JSON: {cmd_name}")
+            print(f"   Commande JSON: {cmd_name}")
             
             # Subscription (abonnement aux données)
             if cmd_name == "subscription":
@@ -335,24 +318,18 @@ class CommandeHandler:
             # Par défaut
             return RICSerialGenerator.creer_reponse_ok(msg_id)
         
-        # ====================================================================
         # COMMANDES BINAIRES
-        # ====================================================================
         elif commande_parsee["type"] == "binary":
-            print(f"   🔢 Commande binaire: type={commande_parsee.get('msg_type')}")
+            print(f"    Commande binaire: type={commande_parsee.get('msg_type')}")
             return RICSerialGenerator.creer_reponse_ok(msg_id)
         
-        # ====================================================================
         # COMMANDE INCONNUE
-        # ====================================================================
         else:
-            print(f"   ❓ Commande inconnue")
+            print(f"    Commande inconnue")
             return RICSerialGenerator.creer_reponse_erreur(msg_id, "Unknown command")
 
 
-# ============================================================================
 # FONCTIONS WEBSOCKET (identiques à l'Étape 1)
-# ============================================================================
 def recevoir_octets(connexion, nombre):
     """Reçoit exactement 'nombre' octets"""
     donnees = b""
@@ -424,9 +401,7 @@ def construire_trame_websocket(payload_bytes, opcode=0x2):
     return header + payload_bytes
 
 
-# ============================================================================
 # GESTIONNAIRE DE CLIENT (THREAD)
-# ============================================================================
 def gerer_client(connexion, adresse):
     """
     Gère un client connecté (avec émulation complète).
@@ -439,7 +414,7 @@ def gerer_client(connexion, adresse):
         num_client = nombre_connexions
     
     print(f"\n{'='*70}")
-    print(f"🤖 CLIENT #{num_client} connecté depuis {adresse}")
+    print(f" CLIENT #{num_client} connecté depuis {adresse}")
     print(f"{'='*70}\n")
     
     # Créer un robot virtuel pour ce client
@@ -447,14 +422,12 @@ def gerer_client(connexion, adresse):
     handler = CommandeHandler(robot)
     
     try:
-        # ====================================================================
         # HANDSHAKE WEBSOCKET
-        # ====================================================================
         requete_http = connexion.recv(4096)
         if not requete_http:
             return
         
-        print(f"📨 Client #{num_client}: Handshake reçu")
+        print(f" Client #{num_client}: Handshake reçu")
         
         texte_requete = requete_http.decode('utf-8', errors='ignore')
         
@@ -484,18 +457,16 @@ def gerer_client(connexion, adresse):
             ).encode()
         
         connexion.sendall(reponse)
-        print(f"✅ Client #{num_client}: Handshake accepté\n")
+        print(f" Client #{num_client}: Handshake accepté\n")
         
-        # ====================================================================
         # BOUCLE DE TRAITEMENT DES COMMANDES
-        # ====================================================================
         compteur_trames = 0
         
         while True:
             trame = lire_trame_websocket(connexion)
             
             if trame is None:
-                print(f"❌ Client #{num_client}: Connexion fermée")
+                print(f" Client #{num_client}: Connexion fermée")
                 break
             
             compteur_trames += 1
@@ -504,31 +475,27 @@ def gerer_client(connexion, adresse):
             
             # Close frame
             if opcode == 0x8:
-                print(f"🚪 Client #{num_client}: Demande de fermeture")
+                print(f" Client #{num_client}: Demande de fermeture")
                 break
             
-            print(f"📥 Client #{num_client} - Trame #{compteur_trames} ({len(payload)} octets)")
+            print(f" Client #{num_client} - Trame #{compteur_trames} ({len(payload)} octets)")
             
-            # ================================================================
             # PARSER LA COMMANDE
-            # ================================================================
             commande = RICSerialParser.parser(payload)
             
-            # ================================================================
             # TRAITER ET RÉPONDRE
-            # ================================================================
             reponse_payload = handler.traiter_commande(commande)
             
             # Envoyer la réponse
             trame_reponse = construire_trame_websocket(reponse_payload, opcode=0x2)
             connexion.sendall(trame_reponse)
             
-            print(f"   ✅ Réponse envoyée ({len(reponse_payload)} octets)")
-            print(f"   🤖 État robot: {robot.get_info()}")
+            print(f"   Réponse envoyée ({len(reponse_payload)} octets)")
+            print(f"   État robot: {robot.get_info()}")
             print()
     
     except Exception as e:
-        print(f"❌ Client #{num_client}: Erreur - {e}")
+        print(f"Client #{num_client}: Erreur - {e}")
         import traceback
         traceback.print_exc()
     
@@ -542,17 +509,14 @@ def gerer_client(connexion, adresse):
             nombre_connexions -= 1
         
         print(f"\n{'='*70}")
-        print(f"👋 CLIENT #{num_client} déconnecté")
+        print(f" CLIENT #{num_client} déconnecté")
         print(f"   • Commandes traitées: {robot.commandes_recues}")
         print(f"   • Clients restants: {nombre_connexions}")
         print(f"{'='*70}\n")
 
 
-# ============================================================================
 # SERVEUR PRINCIPAL
-# ============================================================================
 def demarrer_serveur():
-    """Démarre le serveur d'émulation"""
     
     socket_serveur = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_serveur.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -562,12 +526,12 @@ def demarrer_serveur():
     print("╔" + "═"*68 + "╗")
     print("║" + " SERVEUR D'ÉMULATION MARTY V2 - ÉTAPE 2 ".center(68) + "║")
     print("╠" + "═"*68 + "╣")
-    print(f"║ 🌐 Adresse: {HOST}:{PORT}".ljust(69) + "║")
-    print(f"║ 🚀 Mode: ÉMULATION COMPLÈTE".ljust(69) + "║")
-    print(f"║ 🧵 Threading: ACTIF (multi-clients)".ljust(69) + "║")
-    print(f"║ ⏰ Démarré: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}".ljust(69) + "║")
+    print(f"║  Adresse: {HOST}:{PORT}".ljust(69) + "║")
+    print(f"║  Mode: ÉMULATION COMPLÈTE".ljust(69) + "║")
+    print(f"║  Threading: ACTIF (multi-clients)".ljust(69) + "║")
+    print(f"║  Démarré: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}".ljust(69) + "║")
     print("╚" + "═"*68 + "╝\n")
-    print("📡 En attente de connexions...\n")
+    print(" En attente de connexions...\n")
     
     try:
         while True:
@@ -582,15 +546,13 @@ def demarrer_serveur():
             thread_client.start()
     
     except KeyboardInterrupt:
-        print("\n\n⏹️  Arrêt du serveur (Ctrl+C)")
+        print("\n\n  Arrêt du serveur (Ctrl+C)")
     
     finally:
         socket_serveur.close()
-        print("✅ Serveur arrêté proprement")
+        print(" Serveur arrêté proprement")
 
 
-# ============================================================================
 # POINT D'ENTRÉE
-# ============================================================================
 if __name__ == "__main__":
     demarrer_serveur()
