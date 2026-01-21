@@ -17,17 +17,17 @@ Ce projet vise à émuler un robot **Marty v2** afin de permettre la communicati
 ```bash
 git clone git@github.com:agonglomarel7/Robot-Marty-V2.git
 cd Robot-Marty-V2
-cd marty_emulator
 
-python3 -m venv venv
-source venv/bin/activate
+
+python3 -m venv .venv
+source .venv/bin/activate
 
 pip install -r requirements.txt
 
 cd server
-python3 server_marty_ws.py
+python3 main.py
 
-cd Robot-Marty-V2/marty_emulator/client_test
+cd Robot-Marty-V2/client_cli
 python3 test_marty_ws.py
 
 ---
